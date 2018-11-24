@@ -38,7 +38,7 @@ PI_trace <- matrix(NA, nrow = iters, ncol = K)
 set.seed(123)
 
 xx <- seq(-10, 10, length.out = 100)
-eps <- 2.05e-3
+eps <- 1.0e-4
 pred_dens <- bound_gmm(ret$x, ret$z, mus, sigmas, eps, xx)
 
 hist(ret$x, probability = TRUE, xlim = c(-10, 10), breaks = 25, col ='skyblue')

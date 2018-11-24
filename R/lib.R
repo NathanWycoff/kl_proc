@@ -38,3 +38,8 @@ gmm_l2 <- function(PI1, PI2, mu_1, mu_2, sigma_1, sigma_2) {
 
     return(ldist)
 }
+
+rdirich <- function(alpha) {
+    x <- rgamma(length(alpha), alpha, 1)
+    x / sum(x)
+}
