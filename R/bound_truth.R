@@ -41,5 +41,5 @@ xx <- seq(-10, 10, length.out = 100)
 eps <- 1.0e-4
 pred_dens <- bound_gmm(ret$x, ret$z, mus, sigmas, eps, xx)
 
-hist(ret$x, probability = TRUE, xlim = c(-10, 10), breaks = 25, col ='skyblue')
+hist(ret$x, probability = TRUE, xlim = c(-10, 10), breaks = 1, col ='skyblue')
 points(xx, pred_dens, type = 'l', col = 'blue', lwd = 5)

@@ -37,13 +37,6 @@ bound_gmm <- function(x, z_init, mu_init, sigmas, eps, xx) {
 
     for (iter in 1:iters) {
         print(iter)
-        # Update Mixture Weights
-        clust_counts <- get_count(z_hat, K) + alpha
-        dist <- Inf
-        while (dist > eps) {
-            pi_hat <- rdirich(clust_counts)
-            dist <- get_dist(pi_hat, mu_hat, sigmas)
-        }
 
         # Iterate through each point and pick a new cluster assignment
         for (n in 1:N) {
@@ -70,6 +63,14 @@ bound_gmm <- function(x, z_init, mu_init, sigmas, eps, xx) {
             z_hat <- z_hat_arch
         }
 
+        # Update Mixture Weights
+        clust_counts <- get_count(z_hat, K) + alpha
+        dist <- Inf
+        while (dist > eps) {
+            pi_hat <- rdirich(clust_counts)
+            dist <- get_dist(pi_hat, mu_hat, sigmas)
+        }
+
         # Sample new params
         for (k in 1:K) { 
             post_var <- 1/(1/mu_sigma^2 + sum(z_hat==k) / sigmas[k]^2)
@@ -90,14 +91,17 @@ bound_gmm <- function(x, z_init, mu_init, sigmas, eps, xx) {
     }
 
     dense_trace <- matrix(NA, nrow = iters, ncol = length(xx))
+    var_trace <- matrix(NA, nrow = iters, ncol = length(xx))
     for (ix in 1:length(xx)) {
         for (iter in 1:iters) {
             dens_vec <- sapply(1:K, function(k) dnorm(xx[ix], mu_trace[iter,k], sigmas[k]))
             dense_trace[iter, ix] <- dens_vec %*% PI_trace[iter,]
+            var_trace[iter, ix] <- gmm_var(mu_trace[iter,], sigmas, PI_trace[iter,])
         }
     }
 
     pred_dens <- colMeans(dense_trace)
+    pred_var <- colMeans(var_trace)
 
-
+    return(list(pred_dens, pred_var))
 }

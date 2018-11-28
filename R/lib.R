@@ -43,3 +43,26 @@ rdirich <- function(alpha) {
     x <- rgamma(length(alpha), alpha, 1)
     x / sum(x)
 }
+
+#' Variance of a univariate normal mixture model
+#' @param mu The vector of means
+#' @param sigma The vector of standard deviations
+#' @param PI The vector of mixture weights
+#' @return The scalar variance.
+gmm_var <- function(mu, sigma, PI) {
+    N <- length(mu)
+    var_term <- crossprod(PI, sigma^2)
+    Z_VAR <- matrix(NA, nrow = N, ncol = N)
+    for (i in 1:N) {
+        for (j in 1:i) {
+            if (i == j) {
+                Z_VAR[i,i] <- PI[i] * (1-PI[i])
+            } else {
+                Z_VAR[i,j] <- Z_VAR[j,i] <- -PI[i] * PI[j]
+            }
+        }
+    }
+
+    mean_term <- t(mu) %*% Z_VAR %*% mu
+    return(as.numeric(var_term + mean_term))
+}
